@@ -1,0 +1,6 @@
+If a developer places a file named
+  .no-sublime-package
+in the root of their package, Package Control will extract the package into
+  Packages/{Package Name}/
+instead of
+  /Installed Packages
