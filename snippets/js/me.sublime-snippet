@@ -1,0 +1,19 @@
+<snippet>
+    <content><![CDATA[
+var cnode = \$('${1:#node}');
+if (cnode.length)
+{
+	cnode.on('click', function(){
+	    // ga('send', 'pageview', '${2}');
+	    // yaCounterXXXXXXX.reachGoal('${3}');
+	    // console.log('yandex_metrix_added');
+	});
+} else console.warn("can't finde DOM node");
+${0}
+]]></content>
+    <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+    <tabTrigger>me</tabTrigger>
+    <!-- Optional: Set a scope to limit where the snippet will trigger -->
+    <scope>source.js</scope>
+    <description>metrika onClick event</description>
+</snippet>
