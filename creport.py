@@ -23,10 +23,15 @@ class creportCommand(sublime_plugin.TextCommand):
 			broken = re.search('(?s)('+BROKEN+'|'+BROKEN1+')(\n){2,}(.*?)'+TOP, content)
 			if broken:
 				bcontent = broken.group(3)
+				# TODO: cut images
 				# bcontent = re.sub(r"^http.*\.(png|css|pdf|jpg|gif|zip|js)(?s)(.*?)\n\n", "", bcontent)
 				# bcontent = re.sub(r"^(?s)http\S+\.(png|css|pdf|jpg|gif|zip|js)(.*?)\n\n", "", bcontent)
 				# bcontent = re.sub(r"^\S+\.(png|css)(?s)(.*?)\n\n", "", bcontent)
 				# bcontent = re.sub(r"^http.*", r"#################", bcontent)
+				
+				# TODO: make shorten large link bloks
+				# :\s+(s?)((^\t)http.+\n){1,8}((^\t)http.+\n)+(.*?)\n\n
+				
 				bcontent = re.sub(r"(\n){1,}\d+ broken link\(s\) reported\s*", "", bcontent)
 				bcontent = bcontent.replace("error code", "код ошибки").replace("linked from page(s)", "найдено на страницах")
 				b = self.view.window().new_file()
