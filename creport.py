@@ -29,9 +29,8 @@ class creportCommand(sublime_plugin.TextCommand):
 				# bcontent = re.sub(r"^\S+\.(png|css)(?s)(.*?)\n\n", "", bcontent)
 				# bcontent = re.sub(r"^http.*", r"#################", bcontent)
 				
-				# TODO: make shorten large link bloks
-				# :\s+(s?)((^\t)http.+\n){1,8}((^\t)http.+\n)+(.*?)\n\n
-				
+				# shorten large link bloks
+				bcontent = re.sub(r":\s+((\thttp\S+\n){1,10})(\thttp\S+\n){1,}", r":\n\g<1>\tИ другие...\n", bcontent)
 				bcontent = re.sub(r"(\n){1,}\d+ broken link\(s\) reported\s*", "", bcontent)
 				bcontent = bcontent.replace("error code", "код ошибки").replace("linked from page(s)", "найдено на страницах")
 				b = self.view.window().new_file()
