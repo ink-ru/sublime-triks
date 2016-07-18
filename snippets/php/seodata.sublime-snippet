@@ -1,0 +1,16 @@
+<snippet>
+    <content><![CDATA[
+	case '${1}':
+    	\$aSEOData['title'] = '${2}';
+    	\$aSEOData['descr'] = '${3}';
+		\$aSEOData['keywr'] = '${4}';
+		// \$aSEOData['h1'] = '${0}';
+        // \$aSEOData['text'] = '';
+        // \$aSEOData['text_alt'] = '';
+    break;
+]]></content>
+    <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+    <tabTrigger>seo</tabTrigger>
+    <!-- Optional: Set a scope to limit where the snippet will trigger -->
+    <scope>source.php</scope>
+</snippet>
