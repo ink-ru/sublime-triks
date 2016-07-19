@@ -1,3 +1,5 @@
+# TODO: make single function "transform"
+# TODO: add multyselection support
 import sublime, sublime_plugin, re
 
 class carrayCommand(sublime_plugin.TextCommand):
@@ -5,7 +7,7 @@ class carrayCommand(sublime_plugin.TextCommand):
 
 		logMsg = ""
 		found = 0
-		items = ["текст в массив", "вырезать URI из URL", 'только символьные коды']
+		items = ["текст в массив", "вырезать URI из URL", 'только символьные коды', 'симкоды из чередующегося списка']
 		self.choice = -1
 
 		def transform(s):
@@ -20,6 +22,14 @@ class carrayCommand(sublime_plugin.TextCommand):
 			return s
 
 		def transform2(s):
+			s = re.sub(r"\S+/([^/]+)/?([ ]+[^\n]+)", r"'\1' => \2", s)
+			s = re.sub(r"(\S+ =>).* \S+/([^/]+)/?(\n|\Z)", r"\1 '\2',\3", s)
+			return s
+
+		def transform3(s):
+			s = re.sub(r"\n{2,}", "", s)
+			s = re.sub(r"(\S+)\n(\S+)(\n|\Z)", r"\1 \2\n", s)
+			s = re.sub(r"\s+\Z", "", s)
 			s = re.sub(r"\S+/([^/]+)/?([ ]+[^\n]+)", r"'\1' => \2", s)
 			s = re.sub(r"(\S+ =>).* \S+/([^/]+)/?(\n|\Z)", r"\1 '\2',\3", s)
 			return s
@@ -59,6 +69,10 @@ class carrayCommand(sublime_plugin.TextCommand):
 						content = transform2(content)
 					else:
 						content = transform(content)
+					self.view.replace(edit, dregion, content)
+				elif self.choice == 3:
+					found = 1
+					content = transform3(content)
 					self.view.replace(edit, dregion, content)
 
 			if found > 0:
