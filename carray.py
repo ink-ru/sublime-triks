@@ -5,9 +5,6 @@ class carrayCommand(sublime_plugin.TextCommand):
 
 		logMsg = ""
 		found = 0
-		# window = sublime.active_window()
-
-
 
 		if self.view.size():
 			dregion = sublime.Region(0, self.view.size())
@@ -15,18 +12,20 @@ class carrayCommand(sublime_plugin.TextCommand):
 
 			if len(self.view.sel()[0]) > 0:
 				selection = self.view.substr(self.view.sel()[0])
-				sm = re.search('(\S+)[ ]+(\S+)(\n|\Z)', selection)
+				sm = re.search('(\S+)[ ]+[^\s]*[ ]*(\S+)(\n|\Z)', selection)
 
 				if sm is not None:
-					selection = re.sub(r"(\S+)[ ]+(\S+)(\n|\Z)", r"'\1' => '\2',\3", selection)
+					selection = re.sub(r"(\S+)([ ]+[^\n]+)", r"'\1' => \2", selection)
+					selection = re.sub(r"(\S+ =>).* (\S+)(\n|\Z)", r"\1 '\2',\3", selection)
 					found = 1
 					self.view.replace(edit, self.view.sel()[0], selection)
 
 			else:
 
-				m = re.search('(\S+)[ ]+(\S+)(\n|\Z)', content)
+				m = re.search('(\S+)[ ]+[^\s]*[ ]*(\S+)(\n|\Z)', content)
 				if m is not None:
-					content = re.sub(r"(\S+)[ ]+(\S+)(\n|\Z)", r"'\1' => '\2',\3", content)
+					content = re.sub(r"(\S+)([ ]+[^\n]+)", r"'\1' => \2", content)
+					content = re.sub(r"(\S+ =>).* (\S+)(\n|\Z)", r"\1 '\2',\3", content)
 					found = 1
 					self.view.replace(edit, dregion, content)
 
