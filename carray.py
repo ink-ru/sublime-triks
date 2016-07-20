@@ -22,6 +22,7 @@ class carrayCommand(sublime_plugin.TextCommand):
 			return s
 
 		def transform2(s):
+			s = re.sub(r"\s+\Z", "", s)
 			s = re.sub(r"\S+/([^/]+)/?([ ]+[^\n]+)", r"'\1' => \2", s)
 			s = re.sub(r"(\S+ =>).* \S+/([^/]+)/?(\n|\Z)", r"\1 '\2',\3", s)
 			return s
