@@ -1,0 +1,36 @@
+[
+    {
+        "caption": "Tools",
+        "mnemonic": "t",
+        "id": "tools",
+        "children":
+        [
+            {
+                "caption": "Demis",
+                "mnemonic": "d",
+                "id": "demis",
+                "children":
+                [
+                    {
+                        "command": "creport",
+                        "caption": "Xenu report"
+                    },
+                    {
+                        "caption": "Преобразования в массив",
+                        "children":
+                        [
+                            {
+                                "command": "текст с раделителями(Windows)",
+                                "caption": "carray"
+                            },
+                            {
+                                "command": "schpu",
+                                "caption": "симкоды ЧПУ"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
