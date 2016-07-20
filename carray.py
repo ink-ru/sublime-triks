@@ -43,7 +43,7 @@ class carrayCommand(sublime_plugin.TextCommand):
 
 		if self.view.size():
 			if len(self.view.sel()[0]) > 0:
-				selection = self.view.substr(self.view.sel()[0]).replace("'", "").replace("\"", "")
+				selection = self.view.substr(self.view.sel()[0]).replace("'", "").replace("\"", "").replace("\t", " ")
 				sm = re.search('(\S+)[ ]+[^\s]*[ ]*(\S+)(\n|\Z)', selection)
 
 				if sm is not None:
@@ -62,7 +62,7 @@ class carrayCommand(sublime_plugin.TextCommand):
 
 			else:
 				dregion = sublime.Region(0, self.view.size())
-				content = self.view.substr(dregion).replace("'", "").replace("\"", "")
+				content = self.view.substr(dregion).replace("'", "").replace("\"", "").replace("\t", " ")
 
 				m = re.search('(\S+)[ ]+[^\s]*[ ]*(\S+)(\n|\Z)', content)
 				if m is not None:
