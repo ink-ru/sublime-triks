@@ -20,8 +20,8 @@
                         "children":
                         [
                             {
-                                "command": "текст с раделителями(Windows)",
-                                "caption": "carray"
+                                "command": "carray",
+                                "caption": "текст с раделителями(Windows)"
                             },
                             {
                                 "command": "schpu",
