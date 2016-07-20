@@ -55,6 +55,10 @@ class carrayCommand(sublime_plugin.TextCommand):
 					else:
 						selection = transform(selection)
 					self.view.replace(edit, self.view.sel()[0], selection)
+				elif self.choice == 3:
+					found = 1
+					content = transform3(content)
+					self.view.replace(edit, dregion, content)
 
 			else:
 				dregion = sublime.Region(0, self.view.size())
