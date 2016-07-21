@@ -62,11 +62,4 @@ class creportCommand(sublime_plugin.TextCommand):
 			logMsg += "Empty document!"
 
 		sublime.status_message(logMsg)
-
-
-
-# r.run_command('My1Append', {'text': newcontent})
-# class My1AppendCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit, text):
-# 		self.view.insert(edit, self.view.size(), text)
-# 		self.view.insert(edit, 0, 'New tab \n')
+		sublime.message_dialog(logMsg)
