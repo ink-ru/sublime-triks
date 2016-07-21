@@ -1,7 +1,7 @@
 # TODO: add multyselection support
 import sublime, sublime_plugin, re
 
-class carrayCommand(sublime_plugin.TextCommand):
+class uri2arrayCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 
 		logMsg = ""
