@@ -20,12 +20,12 @@
                         "children":
                         [
                             {
-                                "command": "carray",
-                                "caption": "текст с разделителями"
+                                "command": "text2array",
+                                "caption": "текст с разделителями (столбцы или пары значений)"
                             },
                             {
                                 "command": "schpu",
-                                "caption": "симкоды ЧПУ"
+                                "caption": "вырезать только симкоды ЧПУ"
                             }
                         ]
                     }
