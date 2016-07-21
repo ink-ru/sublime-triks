@@ -1,2 +1,4 @@
 # sublime-triks
-some usefull sublime tools
+Some usefull sublime tools
+
+All plugins aviable in "Tools" => "SeoTools"
