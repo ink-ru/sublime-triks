@@ -1,4 +1,4 @@
 [
 	 { "keys": ["ctrl+shift+c"], "command": "creport" },
-	 { "keys": ["ctrl+shift+l"], "command": "carray" }
+	 { "keys": ["ctrl+shift+l"], "command": "text2array" }
 ]
