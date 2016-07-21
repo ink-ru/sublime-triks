@@ -8,8 +8,8 @@ class schpuCommand(sublime_plugin.TextCommand):
 		logMsg = ""
 
 		def transform(s,mode):
-			if(mode is 'list')
-				s = re.sub(r"^(\S+)\n(\S+)\n", r"\1 \2\n", s)
+			if(mode is 'list'):
+				s = re.sub(r"^(\S+)\n(\S+)(\n|\Z)", r"\1 \2\n", s)
 			s = re.sub(r"\n{2,}", "\n", s)
 			s = re.sub(r"(\S+)\n(\S+)(\n|\Z)", r"\1 \2\n", s)
 			s = re.sub(r"\s+\Z", "", s)
@@ -35,7 +35,7 @@ class schpuCommand(sublime_plugin.TextCommand):
 				m = re.search('(\S+)[ ]+[^\s]*[ ]*(\S+)(\n|\Z)', content)
 				if m is not None:
 					content = transform(content,'normal')
-				elif self.choice == 3:
+				else:
 					content = transform(content,'list')
 				self.view.replace(edit, dregion, content)
 			
