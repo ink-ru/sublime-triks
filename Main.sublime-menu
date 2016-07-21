@@ -1,13 +1,13 @@
 [
     {
         "caption": "Tools",
-        "mnemonic": "t",
+        "mnemonic": "T",
         "id": "tools",
         "children":
         [
             {
                 "caption": "Demis",
-                "mnemonic": "d",
+                "mnemonic": "D",
                 "id": "demis",
                 "children":
                 [
@@ -21,7 +21,7 @@
                         [
                             {
                                 "command": "carray",
-                                "caption": "текст с раделителями(Windows)"
+                                "caption": "текст с разделителями"
                             },
                             {
                                 "command": "schpu",
