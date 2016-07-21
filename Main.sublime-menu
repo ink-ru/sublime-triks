@@ -21,7 +21,7 @@
                         [
                             {
                                 "command": "text2array",
-                                "caption": "текст как есть"
+                                "caption": "строки в массив"
                             },
                             {
                                 "command": "uri2array",
