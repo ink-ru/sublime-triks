@@ -8,6 +8,8 @@ class schpuCommand(sublime_plugin.TextCommand):
 		logMsg = ""
 
 		def transform(s,mode):
+			if(mode is 'list')
+				s = re.sub(r"^(\S+)\n(\S+)\n", r"\1 \2\n", s)
 			s = re.sub(r"\n{2,}", "\n", s)
 			s = re.sub(r"(\S+)\n(\S+)(\n|\Z)", r"\1 \2\n", s)
 			s = re.sub(r"\s+\Z", "", s)
