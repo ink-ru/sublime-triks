@@ -21,7 +21,7 @@
                         [
                             {
                                 "command": "text2array",
-                                "caption": "текст с разделителями (столбцы или пары значений)"
+                                "caption": "текст как есть"
                             },
                             {
                                 "command": "uri2array",
