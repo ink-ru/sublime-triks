@@ -31,10 +31,9 @@ class creportCommand(sublime_plugin.TextCommand):
 
 			item = re.sub(r"\*$", "", item)
 
-			item = item.replace("*", ".*").replace("?", "\?").strip()
+			item = item.replace("*", ".*").replace("?", "\?").replace("$", "\n").strip()
 			item = re.sub(r"$", ".*", item)
 			
-
 			robots_rules = robots_rules + item + '|'
 
 		robots_rules = '^http:\S+('+robots_rules+'/bitrix/$)(?s)(.*?)\n\n'
