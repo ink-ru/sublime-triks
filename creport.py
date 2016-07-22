@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, re
+import sublime, sublime_plugin, re, urllib
 
 class creportCommand(sublime_plugin.TextCommand):
 	
@@ -30,13 +30,14 @@ class creportCommand(sublime_plugin.TextCommand):
 				item = re.sub(r"([^#]*)#.*", r"\1", item)
 
 			item = re.sub(r"\*$", "", item)
-
 			item = item.replace("*", ".*").replace("?", "\?").replace("$", "\n").strip()
-			item = re.sub(r"$", ".*", item)
 			
 			robots_rules = robots_rules + item + '|'
+		robots_rules = robots_rules[:-1]
 
-		robots_rules = '^http:\S+('+robots_rules+'/bitrix/$)(?s)(.*?)\n\n'
+		# TODO: cut images
+		robots_rules = r'(?s)^https?:\S+('+robots_rules+')(.*?)\n\n'
+		
 		return robots_rules
 		
 	def run(self, edit):
@@ -53,20 +54,19 @@ class creportCommand(sublime_plugin.TextCommand):
 		logMsg = ""
 		found = 0
 		window = sublime.active_window()
-		# robots_rules = self.getrobots('http://www.host.ru/robots.txt')
 
 		if self.view.size():
 			dregion = sublime.Region(0, self.view.size())
 			content = self.view.substr(dregion)
 
+			# remove links disallowed by robots.txt
+			rfile = re.search('(https?://[^/]+/)', content)
+			robots_rules = self.getrobots(rfile.group(1)+'robots.txt')
+			content = re.sub(robots_rules, "", content, flags=re.MULTILINE)
+
 			broken = re.search('(?s)('+BROKEN+'|'+BROKEN1+')(\n){2,}(.*?)'+TOP, content)
 			if broken:
 				bcontent = broken.group(3)
-				# TODO: cut images
-				# bcontent = re.sub(r"^http.*\.(png|css|pdf|jpg|gif|zip|js)(?s)(.*?)\n\n", "", bcontent)
-				# bcontent = re.sub(r"^(?s)http\S+\.(png|css|pdf|jpg|gif|zip|js)(.*?)\n\n", "", bcontent)
-				# bcontent = re.sub(r"^\S+\.(png|css)(?s)(.*?)\n\n", "", bcontent)
-				# bcontent = re.sub(r"^http.*", r"#################", bcontent)
 				
 				# shorten large link bloks
 				bcontent = re.sub(r":\s+((\thttp\S+\n){1,10})(\thttp\S+\n){1,}", r":\n\g<1>\tИ другие...\n", bcontent)
@@ -87,6 +87,9 @@ class creportCommand(sublime_plugin.TextCommand):
 				r.insert(edit, 0, rcontent)
 				found+=1
 
+			# ro = self.view.window().new_file()
+			# ro.set_name('robots.txt')
+			# ro.insert(edit, 0, robots_rules+rfile.group(1))
 
 			# content = re.sub(r"(?s)(.*?)\n\n", "", content)
 			# content = re.sub(r"Table (of) contents", r"+\1+", content)
