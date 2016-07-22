@@ -1,6 +1,45 @@
 import sublime, sublime_plugin, re
 
 class creportCommand(sublime_plugin.TextCommand):
+	
+	def download_url_to_string(self, url):
+		request = urllib.request.Request(url)
+		response = urllib.request.urlopen(request)
+		html = response.read()
+		return html
+
+	def getrobots(self, url):
+		#TODO: split single line files
+		robots_rules = ''
+
+		robots = self.download_url_to_string(url)
+		# remove leading and trailing white space
+		robots = robots.strip()
+		# put each line into a list
+		robots_list = robots.decode("utf-8").strip().splitlines()
+
+		for item in robots_list:
+			mach = re.search('^Disallow: +([^\s]+)$', item, flags=re.IGNORECASE)
+			if item == "" or mach == None:
+				continue
+
+			item = mach.group(1)
+
+			if item.find('#') > 0:
+				# comment removing
+				item = re.sub(r"([^#]*)#.*", r"\1", item)
+
+			item = re.sub(r"\*$", "", item)
+
+			item = item.replace("*", ".*").replace("?", "\?").strip()
+			item = re.sub(r"$", ".*", item)
+			
+
+			robots_rules = robots_rules + item + '|'
+
+		robots_rules = '^http:\S+('+robots_rules+'/bitrix/$)(?s)(.*?)\n\n'
+		return robots_rules
+		
 	def run(self, edit):
 		BROKEN  = "Broken links, ordered by link:"
 		BROKEN1 = "Broken links, ordered by page:"
@@ -15,6 +54,7 @@ class creportCommand(sublime_plugin.TextCommand):
 		logMsg = ""
 		found = 0
 		window = sublime.active_window()
+		# robots_rules = self.getrobots('http://www.host.ru/robots.txt')
 
 		if self.view.size():
 			dregion = sublime.Region(0, self.view.size())
