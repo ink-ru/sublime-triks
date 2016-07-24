@@ -65,7 +65,7 @@ class creportCommand(sublime_plugin.TextCommand):
 			content = re.sub(robots_rules, "", content, flags=re.MULTILINE)
 
 			broken = re.search('(?s)('+BROKEN+'|'+BROKEN1+')(\n){2,}(.*?)'+TOP, content)
-			if broken:
+			if broken is not None:
 				bcontent = broken.group(3)
 				
 				# shorten large link bloks
@@ -79,7 +79,7 @@ class creportCommand(sublime_plugin.TextCommand):
 
 			redirects = re.search('(?s)'+REDIR+'(\n){2,}(.*?)'+TOP, content)
 			#redirects = re.search('(?s)List of redirected URLs(\n){2,}(.*?)Return to Top', content)
-			if redirects:
+			if redirects is not None:
 				rcontent = redirects.group(2)
 				rcontent = rcontent.replace("redirected to", "перенаправляет на").replace("status code", "код ответа").replace("linked from page(s)", "найдено на страницах")
 				r = self.view.window().new_file()
