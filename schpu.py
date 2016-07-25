@@ -44,7 +44,8 @@ class schpuCommand(sublime_plugin.TextCommand):
 					for item in content_list:
 						line = item.strip()
 						# if line == "" or ((' ' in line) == False and ('\t' in line) == False):
-						if line == "" or line.find(' ') <= 0:
+						if line == "" or line.find(' ') <= 0 or line.find('/') <= 0:
+							new_content = new_content + line + "\n"
 							continue
 						try_conv = transform(line)
 						if try_conv != False:
@@ -64,7 +65,8 @@ class schpuCommand(sublime_plugin.TextCommand):
 					for item in content_list:
 						line = item.strip()
 						# if line == "" or ((' ' in line) == False and ('\t' in line) == False):
-						if line == "" or line.find(' ') <= 0:
+						if line == "" or line.find(' ') <= 0 or line.find('/') <= 0:
+							new_content = new_content + line + "\n"
 							continue
 						try_conv = transform(line)
 						if try_conv != False:
