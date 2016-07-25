@@ -40,7 +40,7 @@ class schpuCommand(sublime_plugin.TextCommand):
 				selection = self.view.substr(self.view.sel()[0]).replace("'", "").replace("\"", "").replace("\t", " ")
 
 				content_list = selection.strip().splitlines()
-				if clen(content_list) > 0:
+				if len(content_list) > 0:
 					for item in content_list:
 						line = item.strip()
 						# if line == "" or ((' ' in line) == False and ('\t' in line) == False):
@@ -53,7 +53,7 @@ class schpuCommand(sublime_plugin.TextCommand):
 						else:
 							new_content = new_content + line + "\n"
 
-				self.view.replace(edit, self.view.sel()[0], new_content)
+				self.view.replace(edit, self.view.sel()[0], "\n" + new_content)
 
 			else:
 				dregion = sublime.Region(0, self.view.size())
