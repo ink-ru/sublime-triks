@@ -7,6 +7,7 @@ class schpuCommand(sublime_plugin.TextCommand):
 		logMsg = ""
 		found = 0
 		new_content = ""
+		mpt_cnt = 0
 
 		def transform(s):
 			flag = 0
@@ -15,7 +16,7 @@ class schpuCommand(sublime_plugin.TextCommand):
 			first = re.search("^(\S+)\s", s)
 			if first is not None:
 				first = first.group(1)
-				first = re.search("/([^/]+)/?$", s)
+				first = re.search("/([^/]+)/?$", first)
 				if first is not None:
 					first = first.group(1)
 					new_line += "'" + first + "' => '"
@@ -24,7 +25,7 @@ class schpuCommand(sublime_plugin.TextCommand):
 			second = re.search("\s(\S+)$", s)
 			if second is not None:
 				second = second.group(1)
-				second = re.search("/([^/]+)/?$", s)
+				second = re.search("/([^/]+)/?$", second)
 				if second is not None:
 					second = second.group(1)
 					new_line += second + "',"
@@ -40,12 +41,20 @@ class schpuCommand(sublime_plugin.TextCommand):
 				selection = self.view.substr(self.view.sel()[0]).replace("'", "").replace("\"", "").replace("\t", " ")
 
 				content_list = selection.strip().splitlines()
+
+				for item in content_list:
+					line = item.strip()
+					if line.find(' ') <= 0:
+						mpt_cnt = mpt_cnt + 1
+				if mpt_cnt >= (len(content_list)/2):
+					logMsg += 'Row list detected! '
+					content_list = [content_list[i]+' '+content_list[i+1] for i in range(0, len(content_list)-1, 2)]
+
 				if len(content_list) > 0:
 					for item in content_list:
 						line = item.strip()
 						# if line == "" or ((' ' in line) == False and ('\t' in line) == False):
-						if line == "" or line.find(' ') <= 0 or line.find('/') <= 0:
-							new_content = new_content + line + "\n"
+						if line == "" or line.find(' ') <= 0:
 							continue
 						try_conv = transform(line)
 						if try_conv != False:
@@ -54,19 +63,27 @@ class schpuCommand(sublime_plugin.TextCommand):
 						else:
 							new_content = new_content + line + "\n"
 
-				self.view.replace(edit, self.view.sel()[0], "\n" + new_content)
+				self.view.replace(edit, self.view.sel()[0], new_content)
 
 			else:
 				dregion = sublime.Region(0, self.view.size())
 				content = self.view.substr(dregion).replace("'", "").replace("\"", "").replace("\t", " ")
 
 				content_list = content.strip().splitlines()
+
+				for item in content_list:
+					line = item.strip()
+					if line.find(' ') <= 0:
+						mpt_cnt = mpt_cnt + 1
+				if mpt_cnt >= (len(content_list)/2):
+					logMsg += 'Row list detected! '
+					content_list = [content_list[i]+' '+content_list[i+1] for i in range(0, len(content_list)-1, 2)]
+
 				if len(content_list) > 0:
 					for item in content_list:
 						line = item.strip()
 						# if line == "" or ((' ' in line) == False and ('\t' in line) == False):
-						if line == "" or line.find(' ') <= 0 or line.find('/') <= 0:
-							new_content = new_content + line + "\n"
+						if line == "":
 							continue
 						try_conv = transform(line)
 						if try_conv != False:
