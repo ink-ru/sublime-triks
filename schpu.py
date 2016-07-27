@@ -39,7 +39,9 @@ class schpuCommand(sublime_plugin.TextCommand):
 
 		def highlight(region, mode):
 			if(mode == 'selection'):
-				self.view.add_regions('raw', region, "comment")
+				# self.view.add_regions('raw', region, "comment")
+				# print("skip highlighting")
+				self.view.sel().add(region)
 			else:
 				old_regions = region.find_all("^[^>]+$")
 				# self.view.add_regions("mark", dregion, "mark", "dot", sublime.HIDDEN | sublime.PERSISTENT)
