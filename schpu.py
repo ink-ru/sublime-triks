@@ -37,6 +37,15 @@ class schpuCommand(sublime_plugin.TextCommand):
 			else:
 				return False
 
+		def highlight(region, mode):
+			if(mode == 'selection'):
+				self.view.add_regions('raw', region, "comment")
+			else:
+				old_regions = region.find_all("^[^>]+$")
+				# self.view.add_regions("mark", dregion, "mark", "dot", sublime.HIDDEN | sublime.PERSISTENT)
+				# self.view.add_regions('raw', [sublime.Region(0, self.view.size())], 'comment')
+				region.add_regions('raw', old_regions, "mark", "dot")
+
 		if self.view.size():
 			if len(self.view.sel()[0]) > 0:
 				for sel_region in self.view.sel():
@@ -69,6 +78,8 @@ class schpuCommand(sublime_plugin.TextCommand):
 							new_content = new_content[:-1]
 					self.view.replace(edit, sel_region, new_content)
 					lines_total = lines_total + len(content_list)
+
+				highlight(self.view.sel(), 'selection')
 
 				if len(self.view.sel()) > 0:
 					lines_total = lines_total
@@ -103,6 +114,9 @@ class schpuCommand(sublime_plugin.TextCommand):
 							new_content = new_content + line + "\n"
 
 				self.view.replace(edit, dregion, new_content)
+				
+				highlight(self.view, 'all')
+
 				lines_total = len(content_list)
 			
 			if found > 0:
