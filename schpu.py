@@ -8,6 +8,7 @@ class schpuCommand(sublime_plugin.TextCommand):
 		found = 0
 		new_content = ""
 		mpt_cnt = 0
+		lines_total = 0
 
 		def transform(s):
 			flag = 0
@@ -38,32 +39,41 @@ class schpuCommand(sublime_plugin.TextCommand):
 
 		if self.view.size():
 			if len(self.view.sel()[0]) > 0:
-				selection = self.view.substr(self.view.sel()[0]).replace("'", "").replace("\"", "").replace("\t", " ")
+				for sel_region in self.view.sel():
+					new_content = ""
+					selection = self.view.substr(sel_region).replace("'", "").replace("\"", "").replace("\t", " ")
+					content_list = selection.strip().splitlines()
 
-				content_list = selection.strip().splitlines()
-
-				for item in content_list:
-					line = item.strip()
-					if line.find(' ') <= 0:
-						mpt_cnt = mpt_cnt + 1
-				if mpt_cnt >= (len(content_list)/2):
-					logMsg += 'Row list detected! '
-					content_list = [content_list[i]+' '+content_list[i+1] for i in range(0, len(content_list)-1, 2)]
-
-				if len(content_list) > 0:
 					for item in content_list:
 						line = item.strip()
-						# if line == "" or ((' ' in line) == False and ('\t' in line) == False):
-						if line == "" or line.find(' ') <= 0:
-							continue
-						try_conv = transform(line)
-						if try_conv != False:
-							new_content = new_content + try_conv + "\n"
-							found = found + 1
-						else:
-							new_content = new_content + line + "\n"
+						if line.find(' ') <= 0:
+							mpt_cnt = mpt_cnt + 1
+					if mpt_cnt >= (len(content_list)/2):
+						logMsg += 'Row list detected! '
+						content_list = [content_list[i]+' '+content_list[i+1] for i in range(0, len(content_list)-1, 2)]
 
-				self.view.replace(edit, self.view.sel()[0], new_content)
+					if len(content_list) > 0:
+						for item in content_list:
+							line = item.strip()
+							# if line == "" or ((' ' in line) == False and ('\t' in line) == False):
+							if line == "" or line.find(' ') <= 0:
+								continue
+							try_conv = transform(line)
+							if try_conv != False:
+								new_content = new_content + try_conv + "\n"
+								found = found + 1
+							else:
+								new_content = new_content + line + "\n"
+						if len(new_content) > 0:
+							# new_content = re.sub('\s+$', '', new_content)
+							new_content = new_content[:-1]
+					self.view.replace(edit, sel_region, new_content)
+					lines_total = lines_total + len(content_list)
+
+				if len(self.view.sel()) > 0:
+					lines_total = lines_total
+				else:
+					lines_total = len(content_list)
 
 			else:
 				dregion = sublime.Region(0, self.view.size())
@@ -93,9 +103,10 @@ class schpuCommand(sublime_plugin.TextCommand):
 							new_content = new_content + line + "\n"
 
 				self.view.replace(edit, dregion, new_content)
+				lines_total = len(content_list)
 			
 			if found > 0:
-				logMsg += "Done! Found " + str(found) + " from " + str(len(content_list)) + " lines."
+				logMsg += "Done! Found " + str(found) + " from " + str(lines_total) + " lines."
 			else:
 				logMsg += "Nothing found."
 		else:
