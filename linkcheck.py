@@ -22,7 +22,10 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
 			# print(e.reason)
-			return e.code
+			if hasattr(e, 'code'):
+				return e.code
+			else:
+				return 0
 		else:
 			return 200
 
