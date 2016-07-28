@@ -31,14 +31,13 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 		return ''.join(random.choice(string) for i in range(length))
 
 	def chk_links(self,vspace):
-		# url_regions = self.view.find_all("^[^\n]*Рекомендации\s+для\s+страницы\s+https?://[^\n]+$")
 		url_regions = vspace.find_all("https?://[^\"'\s]+")
 
 		i=0
 		for region in url_regions:
 			cl = vspace.substr(region)
 			code = self.get_response(cl)
-			vspace.add_regions('url'+str(i), [region], "mark", "Packages/User/icons/"+str(code)+".png")
+			vspace.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png")
 			i = i+1
 		return i
 
