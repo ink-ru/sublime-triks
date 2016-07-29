@@ -41,34 +41,47 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 			cl = vspace.substr(region)
 			code = self.get_response(cl)
 			vspace.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png")
+			print("Packages/SeoTools/icons/"+str(code)+".png\n")
 			i = i+1
+		return i
+
+	# Check all links in view
+	def check_links(self, view):
+		# Find all URL's in the view
+		url_regions = view.find_all ("https?://[^\"'\s]+")
+
+		i = 0
+		for region in url_regions:
+			cl = view.substr(region)
+
+			# URL regions in selection
+			if len(view.sel()[0]) > 0:
+				if view.sel().contains(region):
+					code = self.get_response(cl)
+					view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png")
+					print("Selection Packages/SeoTools/icons/"+str(code)+".png\n")
+					i = i + 1
+			else:
+				code = self.get_response(cl)
+				# Region is either in the selection or there is no selection
+				view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png")
+				print("Packages/SeoTools/icons/"+str(code)+".png\n")
+				i = i + 1
 		return i
 
 	def run(self, edit):
 		logMsg = ''
 		total = 0
 
-		if not self.view.is_read_only():
-			if self.view.size():
-				if len(self.view.sel()[0]) > 0:
-					# DUMMY: not working yet
-					# for sel_region in self.view.sel():
-					# 	total = total + self.chk_links(sel_region)
+		if not self.view.is_read_only() or self.view.size() < 1:
+			total = self.check_links(self.view)
 
-					total = self.chk_links(self.view)
-					
-				else:
-					total = self.chk_links(self.view)
-
-					if total > 0:
-						logMsg += "Done!"
-					else:
-						logMsg += "Nothing found."
+			if total > 0:
+				logMsg += "Done!"
 			else:
-				logMsg += "Empty document!"
+				logMsg += "Nothing found."
 		else:
-			logMsg += "Read only document!"
+			logMsg += "Empty document or readonly document!"
 
 		sublime.status_message(logMsg)
 		sublime.message_dialog(logMsg)
-
