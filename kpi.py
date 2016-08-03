@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, re, urllib, random, json, collections, signal
+import sublime, sublime_plugin, re, urllib, random, json, collections, socket
 
 class kpiCommand(sublime_plugin.TextCommand):
 
@@ -56,9 +56,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 		# sublime.active_window().active_view().show_popup(html, flags=1, location=1, max_width=860, max_height=640, on_navigate=self.on_choice_html, on_hide=self.on_hide_html)
 
 	def run(self, edit):
+		socket.setdefaulttimeout(10)
 		dregion = sublime.Region(0, self.view.size())		
 		self.view.replace(edit, dregion, '') # clear screen
-		signal.signal(signal.SIGALRM, self.signal_handler) # execution time watcher
 
 		logMsg = ''
 		total = 0
@@ -84,7 +84,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 				username = authstring[0]
 				password = authstring[1]
 
-		signal.alarm(10)   # Ten seconds
 		try:
 			content = self.auth(domain_url+smoke_uri, username, password)
 			if content.find("Авторизация LDAP") > 0:
@@ -150,9 +149,11 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 				else:
 					logMsg += "Readonly document!"
-		except Exception as e:
-			sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
-			sublime.message_dialog("Ошибка: "+str(e))
+		finally:
+			logMsg += "Done!"
+		# except Exception as e: # urllib.error.URLError: <urlopen error timed out>
+		# 	sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
+		# 	sublime.message_dialog("Ошибка: "+str(e))
 
 		if len(logMsg) > 6:
 			sublime.status_message(logMsg)
@@ -166,6 +167,3 @@ class kpiCommand(sublime_plugin.TextCommand):
 			self.view.run_command('kpi')
 		else:
 			sublime.status_message("Вы забыли ввести разделитель!!!")
-
-	def signal_handler(signum, frame, e):
-		raise Exception("Timed out!")
