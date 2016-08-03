@@ -36,6 +36,10 @@
                     {
                         "command": "linkcheck",
                         "caption": "проверка ссылок"
+                    },
+                    {
+                        "command": "kpi",
+                        "caption": "KPI"
                     }
                 ]
             }
