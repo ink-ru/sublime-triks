@@ -1,4 +1,8 @@
-import sublime, sublime_plugin, re, urllib, random, json, collections, socket
+import sublime, sublime_plugin, re, urllib, random, json, collections, signal
+if sublime.platform() == 'windows':
+	import socket
+	socket.setdefaulttimeout(10)
+
 
 class kpiCommand(sublime_plugin.TextCommand):
 
@@ -56,9 +60,12 @@ class kpiCommand(sublime_plugin.TextCommand):
 		# sublime.active_window().active_view().show_popup(html, flags=1, location=1, max_width=860, max_height=640, on_navigate=self.on_choice_html, on_hide=self.on_hide_html)
 
 	def run(self, edit):
-		socket.setdefaulttimeout(10)
 		dregion = sublime.Region(0, self.view.size())		
 		self.view.replace(edit, dregion, '') # clear screen
+		if sublime.platform() == 'windows':
+			socket.setdefaulttimeout(10)
+		else:
+			signal.signal(signal.SIGALRM, self.signal_handler) # execution time watcher
 
 		logMsg = ''
 		total = 0
@@ -77,6 +84,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 		self.this_settings = 'kpi.sublime-settings'
 		self.settings = sublime.load_settings(self.this_settings)
 		authstring = self.settings.get("authstring")
+		my_id = self.settings.get("my_id")
+		vacation = self.settings.get("vacation")
+		vacation = vacation if (vacation is not None and vacation > 0) else 0
 
 		if authstring is not None:
 			authstring = authstring.split(':')
@@ -84,6 +94,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 				username = authstring[0]
 				password = authstring[1]
 
+		if sublime.platform() == 'linux':
+			signal.alarm(10)
+		print(sublime.platform())
 		try:
 			content = self.auth(domain_url+smoke_uri, username, password)
 			if content.find("Авторизация LDAP") > 0:
@@ -119,7 +132,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 				}
 
 				for record in cdict:
-					table += str(udict[record]['name'])+"\n"
+					table += str(udict[record]['name'])+" ("+str(udict[record]['grade_name'])+")\n"
 					# cdict[record]['avg_result'] = cdict[record]['result']/cdict[record]['issues_cnt']
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=True))
 					for r_feild in od:
@@ -136,11 +149,10 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 					# table += "\t{0:40}{1}".format('Средний балл', str( cdict[record]['result']/cdict[record]['issues_cnt'] ) ) + "\n"
 
-					r = float(cdict[record]['result'])
 					c = int(cdict[record]['issues_cnt'])
-					c = c if c > 0 else 1
-					a = r/c
-					table += "\t{0:40}{1}".format('Средний балл', str( a ) ) + "\n"
+					table += "\t{0:40}{1}".format('Средний балл', str( float(cdict[record]['result'])/(c if c > 0 else 1) ) ) + "\n"
+					if vacation > 0:
+						table += "\t{0:40}{1}".format('Отсутствовал',  vacation) + "\n"
 
 				if not self.view.is_read_only():
 					self.view.replace(edit, dregion, str(table))
@@ -149,11 +161,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 				else:
 					logMsg += "Readonly document!"
-		finally:
-			logMsg += "Done!"
-		# except Exception as e: # urllib.error.URLError: <urlopen error timed out>
-		# 	sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
-		# 	sublime.message_dialog("Ошибка: "+str(e))
+		except Exception as e:
+			sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
+			sublime.message_dialog("Ошибка: "+str(e))
 
 		if len(logMsg) > 6:
 			sublime.status_message(logMsg)
@@ -167,3 +177,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 			self.view.run_command('kpi')
 		else:
 			sublime.status_message("Вы забыли ввести разделитель!!!")
+
+	def signal_handler(signum, frame, e):
+		raise Exception("Timed out!")
