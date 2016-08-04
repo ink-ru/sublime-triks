@@ -1,8 +1,13 @@
-import sublime, sublime_plugin, re, urllib, random, json, collections, signal
+import sublime, sublime_plugin
+import re, urllib, random, json, collections
+
 if sublime.platform() == 'windows':
 	import socket
 	socket.setdefaulttimeout(10)
+else:
+	import signal
 
+from .pcal import *
 
 class kpiCommand(sublime_plugin.TextCommand):
 
@@ -96,7 +101,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 		if sublime.platform() == 'linux':
 			signal.alarm(10)
-		print(sublime.platform())
+
+		# print(today_is_working())
+
 		try:
 			content = self.auth(domain_url+smoke_uri, username, password)
 			if content.find("Авторизация LDAP") > 0:
@@ -131,9 +138,22 @@ class kpiCommand(sublime_plugin.TextCommand):
 				# '':'',
 				}
 
+				plan_rate_dict = {
+				'Ведущий программист':450,
+				'Старший программист':400,
+				'Программист':350,
+				'Стажер-1М':87.5, # испытательный срок
+				'Стажер-1М':210,
+				'Стажер-3М':315,
+				'Исп-1М':100, # повышенный грейд
+				'Исп-1М':240,
+				'Исп-3М':360
+				}
+
 				for record in cdict:
-					table += str(udict[record]['name'])+" ("+str(udict[record]['grade_name'])+")\n"
-					# cdict[record]['avg_result'] = cdict[record]['result']/cdict[record]['issues_cnt']
+					table += "{0:40}{1}".format( str(udict[record]['name']), "("+str(udict[record]['grade_name'])+")" ) + "\n"
+					# table += str(udict[record]['name'])+" ("+str(udict[record]['grade_name'])+")\n"
+
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=True))
 					for r_feild in od:
 						if not ( (cdict[record]['dept_issues_cnt'] == 0 and str(r_feild).find('dept_') >= 0) or (str(r_feild).find('_vip') >= 0 and int(cdict[record][r_feild]) == 0) ):
@@ -147,21 +167,32 @@ class kpiCommand(sublime_plugin.TextCommand):
 							table += "\t{0:40}{1}".format(param_name, str(cdict[record][r_feild]))+"\n"
 							# table += "\t{0:40}{:.2f}".format( param_name, str(cdict[record][r_feild]))+"\n"
 
-					# table += "\t{0:40}{1}".format('Средний балл', str( cdict[record]['result']/cdict[record]['issues_cnt'] ) ) + "\n"
+					isues_amount = int(cdict[record]['issues_cnt'])
+					vip_isues_amount = int(cdict[record]['labor_vip'])
+					if vip_isues_amount > 0:
+						isues_amount = isues_amount + vip_isues_amount
+					table += "\t{0:40}{1}".format('Средний балл', str( float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1) ) ) + "\n"
 
-					c = int(cdict[record]['issues_cnt'])
-					table += "\t{0:40}{1}".format('Средний балл', str( float(cdict[record]['result'])/(c if c > 0 else 1) ) ) + "\n"
+					try:
+						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
+					except KeyError as e:
+						plan_rate = 0
+					if float(plan_rate) > 0:
+						table += "\t{0:40}{1}".format('План', str( plan_rate ) ) + "\n"
+
+
 					if vacation > 0:
 						table += "\t{0:40}{1}".format('Отсутствовал',  vacation) + "\n"
 
 				if not self.view.is_read_only():
 					self.view.replace(edit, dregion, str(table))
 					self.view.run_command('fold_all')
+					self.view.sel().clear()
 					sublime.status_message("Раскройте нужный вам блок")
 
 				else:
 					logMsg += "Readonly document!"
-		except Exception as e:
+		except Exception as e: # urllib.error.URLError: <urlopen error timed out>
 			sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
 			sublime.message_dialog("Ошибка: "+str(e))
 
