@@ -77,7 +77,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 		authstring = ''
 		username = ''
 		password = ''
-		table = ''
+		table = 'Demis KPI\n'
 
 		domain_url = "http://otp.demis.ru"
 		api_uri = "/smoke/oto/uto-kpi-api.php"
@@ -182,14 +182,18 @@ class kpiCommand(sublime_plugin.TextCommand):
 					if vacation > 0:
 						table += "\t{0:40}{1}".format('Отсутствовал',  vacation) + "\n"
 
-				if not self.view.is_read_only():
+				if self.view.name() == 'Demis KPI' and (not self.view.is_read_only()):
 					self.view.replace(edit, dregion, str(table))
 					self.view.run_command('fold_all')
 					self.view.sel().clear()
-					sublime.status_message("Раскройте нужный вам блок")
-
 				else:
-					logMsg += "Readonly document!"
+					target_view = self.view.window().new_file()
+					target_view.set_name('Demis KPI')
+					target_view.insert(edit, 0, table)
+					target_view.run_command('fold_all')
+					target_view.sel().clear()
+				sublime.status_message("Раскройте нужный вам блок")
+
 		except Exception as e: # urllib.error.URLError: <urlopen error timed out>
 			sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
 			sublime.message_dialog("Ошибка: "+str(e))
