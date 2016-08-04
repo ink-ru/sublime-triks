@@ -102,8 +102,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 		if sublime.platform() == 'linux':
 			signal.alarm(10)
 
-		# print(today_is_working())
-
 		try:
 			content = self.auth(domain_url+smoke_uri, username, password)
 			if content.find("Авторизация LDAP") > 0:
@@ -178,8 +176,8 @@ class kpiCommand(sublime_plugin.TextCommand):
 					except KeyError as e:
 						plan_rate = 0
 					if float(plan_rate) > 0:
-						table += "\t{0:40}{1}".format('План', str( plan_rate ) ) + "\n"
-
+						table += "\t{0:40}{1}".format('План', str( float(plan_rate)/20*int(working_days()) ) ) + "\n"
+						table += "\t{0:40}{1}".format('Порог амнистии', str( float(plan_rate)/20*int(working_days())*1.3 ) ) + "\n"
 
 					if vacation > 0:
 						table += "\t{0:40}{1}".format('Отсутствовал',  vacation) + "\n"
