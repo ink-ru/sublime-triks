@@ -39,9 +39,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 		self.this_settings = 'kpi.sublime-settings'
 		self.settings = sublime.load_settings(self.this_settings)
 		authstring = self.settings.get("authstring")
-		# my_id = self.settings.get("my_id")
-		# vacation = self.settings.get("vacation")
-		# vacation = vacation if (vacation is not None and vacation > 0) else 0
+		my_id = self.settings.get("my_id")
+		vacation = self.settings.get("vacation")
+		vacation = vacation if (vacation is not None and vacation > 0) else 0
 
 		if authstring is not None:
 			authstring = authstring.split(':')
