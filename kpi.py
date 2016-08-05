@@ -162,22 +162,33 @@ class kpiCommand(sublime_plugin.TextCommand):
 								# raise ValueError('Undefined unit: {}'.format(e.args[0]))
 
 							param_name += ':'
-							table += "\t{0:40}{1}".format(param_name, str(cdict[record][r_feild]))+"\n"
-							# table += "\t{0:40}{:.2f}".format( param_name, str(cdict[record][r_feild]))+"\n"
+							table += "\t{0:40}{1:.2f}".format(param_name, float(cdict[record][r_feild]))+"\n"
 
 					isues_amount = int(cdict[record]['issues_cnt'])
 					vip_isues_amount = int(cdict[record]['labor_vip'])
 					if vip_isues_amount > 0:
 						isues_amount = isues_amount + vip_isues_amount
-					table += "\t{0:40}{1}".format('Средний балл', str( float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1) ) ) + "\n"
+					
+					table += "\t{0:40}{1:.2f}".format('средний балл:', float( float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1) ) ) + "\n"
 
 					try:
 						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
 					except KeyError as e:
 						plan_rate = 0
+
 					if float(plan_rate) > 0:
-						table += "\t{0:40}{1}".format('План', str( float(plan_rate)/20*int(working_days()) ) ) + "\n"
-						table += "\t{0:40}{1}".format('Порог амнистии', str( float(plan_rate)/20*int(working_days())*1.3 ) ) + "\n"
+						plan_per_day = float(plan_rate)/20
+						real_plan = plan_per_day*int(pCal.working_days())
+						daily_index = float(cdict[record]['labor'])/pCal.working_days_passed()
+						if daily_index > 3:
+							daily_index = int(daily_index)-1
+						
+						table += "\t{0:40}{1:.2f}".format('план:', float(real_plan) ) + "\n"
+						table += "\t{0:40}{1:.2f}".format('порог амнистии:', float( plan_per_day*int(pCal.working_days())*1.3 ) ) + "\n"
+						table += "\t{0:40}{1:.2f}".format('план на сегодня:', float( plan_per_day*int(pCal.working_days_passed()) ) ) + "\n"
+						table += "\t{0:40}{1:.2f}".format('баллов в день:', float(daily_index) ) + "\n"
+						table += "\t{0:40}{1:.2f}".format('прогноз:', float(daily_index*float(pCal.working_days())) ) + "\n"
+
 
 					if vacation > 0:
 						table += "\t{0:40}{1}".format('Отсутствовал',  vacation) + "\n"
@@ -197,6 +208,8 @@ class kpiCommand(sublime_plugin.TextCommand):
 		except Exception as e: # urllib.error.URLError: <urlopen error timed out>
 			sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
 			sublime.message_dialog("Ошибка: "+str(e))
+		finally:
+			signal.alarm(0)
 
 		if len(logMsg) > 6:
 			sublime.status_message(logMsg)
