@@ -8,61 +8,17 @@ else:
 	import signal
 
 from .pcal import *
+from .kpi_dicts import *
 
 class kpiCommand(sublime_plugin.TextCommand):
 
-	def parse_url(self, url):
-		request = urllib.request.Request(url)
-		# request.add_header('Referer', 'https://www.google.ru/?q='+self.randomword(5))
-		# request.add_header = ('User-agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
-		# urllib.request.urlcleanup()
-		resorce = urllib.request.urlopen(request)
-		html = resorce.read().decode("utf-8").strip()
-		return html
-
-	def auth(self, url, username, password):		
+	def get_auth_url(self, url, username, password):		
 		data = urllib.parse.urlencode({'ldap-mail': username, 'ldap-pass': password, 'go': ' Войти '})
 		data = data.encode('ascii') # data should be bytes
 		request = urllib.request.Request(url, data)
 		resorce = urllib.request.urlopen(request)
 		html = resorce.read().decode("utf-8").strip()
 		return html
-
-	def get_data(self, resource):
-		# resources = sublime.find_resources('unicode-characters.html')
-		resources = sublime.find_resources(resource)
-		content = sublime.load_resource(resources[0])
-		return content
-
-	def get_content(self, url):
-		content = self.parse_url(url)
-		# content_list = content.decode("utf-8").strip().splitlines()
-		content= content.decode("utf-8").strip()
-		return content
-
-	def get_response(self, url):
-		req = urllib.request.Request(url)
-		try:
-			response = urllib.request.urlopen(req)
-		except urllib.error.URLError as e:
-			# print(e.reason)
-			if hasattr(e, 'code'):
-				return e.code
-			else:
-				return 0
-		else:
-			return 200
-
-	def randomword(self, length):
-		string = 'abcdefghijklmnopqrstuvwxyz'
-		return ''.join(random.choice(string) for i in range(length))
-
-	def show_opanel(self, content):
-		pt = sublime.active_window().get_output_panel("paneltest")
-		pt.set_read_only(False)
-		pt.insert(edit, pt.size(), str(content))
-		sublime.active_window().run_command("show_panel", {"panel": "output.paneltest"})
-		# sublime.active_window().active_view().show_popup(html, flags=1, location=1, max_width=860, max_height=640, on_navigate=self.on_choice_html, on_hide=self.on_hide_html)
 
 	def run(self, edit):
 		dregion = sublime.Region(0, self.view.size())		
@@ -79,19 +35,13 @@ class kpiCommand(sublime_plugin.TextCommand):
 		password = ''
 		table = 'Demis KPI\n'
 
-		domain_url = "http://otp.demis.ru"
-		api_uri = "/smoke/oto/uto-kpi-api.php"
-		kpi_uri = "/smoke/oto/uto-kpi-tmp.php"
-		smoke_uri = "/smoke/"
-		api_employees_get = "?action=users&da-rest=json"
-		api_result_get = "?action=result&da-rest=json"
-
+		# Reading settings
 		self.this_settings = 'kpi.sublime-settings'
 		self.settings = sublime.load_settings(self.this_settings)
 		authstring = self.settings.get("authstring")
-		my_id = self.settings.get("my_id")
-		vacation = self.settings.get("vacation")
-		vacation = vacation if (vacation is not None and vacation > 0) else 0
+		# my_id = self.settings.get("my_id")
+		# vacation = self.settings.get("vacation")
+		# vacation = vacation if (vacation is not None and vacation > 0) else 0
 
 		if authstring is not None:
 			authstring = authstring.split(':')
@@ -99,54 +49,23 @@ class kpiCommand(sublime_plugin.TextCommand):
 				username = authstring[0]
 				password = authstring[1]
 
+		# Setting MAX execution time
 		if sublime.platform() == 'linux':
 			signal.alarm(10)
 
 		try:
-			content = self.auth(domain_url+smoke_uri, username, password)
+			content = self.get_auth_url(domain_url+smoke_uri, username, password)
 			if content.find("Авторизация LDAP") > 0:
 				sublime.message_dialog("Требуется авторизация, \nвведите учетные данные ниже. \nДля отмены нажмите ESC.")
 				self.view.window().show_input_panel("login:password", '', self.save_sett, None, None)
 			else:
 				full_url = domain_url + api_uri + api_result_get
-				rjson = self.auth(full_url, username, password)
+				rjson = self.get_auth_url(full_url, username, password)
 				cdict = json.loads(rjson)
 
 				full_url = domain_url + api_uri + api_employees_get
-				rjson = self.auth(full_url, username, password)
+				rjson = self.get_auth_url(full_url, username, password)
 				udict = json.loads(rjson)
-
-				result_rus_dict = {
-				'intime': 'задач в срок',
-				'overdue_cnt':'просроченно задач',
-				'dept_intime':'подразделение - в срок',
-				'result':'баллы грязные',
-				'dept_labor':'подразделение - баллы чистые',
-				'dept_result':'подразделение - баллы грязные',
-				'dept_issues_cnt':'подразделение - всего задач',
-				'idle_penalty':'штраф за провис',
-				'intime_perc':'процент в срок',
-				'dept_idle_penalty':'подразделение - штраф за провис',
-				'issues_cnt':'всего задач',
-				'labor':'баллы чистые',
-				'dept_labor_vip':'подразделение - VIP',
-				'dept_overdue_cnt':'подразделение - просроченно задач',
-				'dept_intime_perc':'подразделение - процент в срок',
-				'labor_vip':'VIP',
-				# '':'',
-				}
-
-				plan_rate_dict = {
-				'Ведущий программист':450,
-				'Старший программист':400,
-				'Программист':350,
-				'Стажер-1М':87.5, # испытательный срок
-				'Стажер-1М':210,
-				'Стажер-3М':315,
-				'Исп-1М':100, # повышенный грейд
-				'Исп-1М':240,
-				'Исп-3М':360
-				}
 
 				for record in cdict:
 					table += "{0:40}{1}".format( str(udict[record]['name']), "("+str(udict[record]['grade_name'])+")" ) + "\n"
@@ -168,8 +87,10 @@ class kpiCommand(sublime_plugin.TextCommand):
 					vip_isues_amount = int(cdict[record]['labor_vip'])
 					if vip_isues_amount > 0:
 						isues_amount = isues_amount + vip_isues_amount
-					
-					table += "\t{0:40}{1:.2f}".format('средний балл:', float( float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1) ) ) + "\n"
+
+					avg_issue_index = float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1)
+					cdict[record]['avg_issue_index'] = avg_issue_index
+					table += "\t{0:40}{1:.2f}".format('средний балл:', float(avg_issue_index) ) + "\n"
 
 					try:
 						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
