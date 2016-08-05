@@ -130,7 +130,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 			sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
 			sublime.message_dialog("Ошибка: "+str(e))
 		finally:
-			signal.alarm(0)
+			# Reset MAX execution time
+			if sublime.platform() == 'linux':
+				signal.alarm(0)
 
 		if len(logMsg) > 6:
 			sublime.status_message(logMsg)
