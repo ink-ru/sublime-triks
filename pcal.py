@@ -4,20 +4,8 @@
 
 import calendar, datetime
 
+class pCal:
 
-
-def month_days(month_number='current'):
-	now = datetime.datetime.now()
-	if month_number == 'current':
-		return calendar.monthrange(2016, now.month)[1]
-	elif month_number == 'previous':
-		return calendar.monthrange(2016, now.month-1)[1]
-	elif isinstance(month_number, int) and (int(month_number) > 0) and (int(month_number) < 13):
-		return calendar.monthrange(2016, int(month_number))[1]
-	else:
-		return False
-
-def working_days(month_number='current'):
 	#http://data.gov.ru/opendata/7708660670-proizvcalendar
 	p_clndr =  {
 	'2016':[
@@ -80,11 +68,44 @@ def working_days(month_number='current'):
 
 	now = datetime.datetime.now()
 
-	if month_number == 'current':
-		return str( month_days() - len(p_clndr['2016'][now.month]) )
-	elif month_number == 'previous':
-		return str( month_days(now.month-1) - len(p_clndr['2016'][now.month-1]) )
-	elif isinstance(month_number, int) and (int(month_number) > 0) and (int(month_number) < 13):
-		return str( month_days(int(month_number)) - len(p_clndr['2016'][int(month_number)]) )
-	else:
-		return False
+	def month_days(month_number='current'):
+		if month_number == 'current':
+			return calendar.monthrange(pCal.now.year, pCal.now.month-1)[1]
+		elif month_number == 'previous':
+			return calendar.monthrange(pCal.now.year, pCal.now.month-2)[1]
+		elif isinstance(month_number, int) and (int(month_number) > 0) and (int(month_number) < 13):
+			return calendar.monthrange(pCal.now.year, int(month_number))[1]
+		else:
+			return False
+
+	def working_days(month_number='current'):
+		if month_number == 'current':
+			return str( pCal.month_days() - len(pCal.p_clndr[str(pCal.now.year)][pCal.now.month-1]) )
+		elif month_number == 'previous':
+			return str( pCal.month_days(pCal.now.month-2) - len(pCal.p_clndr[str(pCal.now.year)][pCal.now.month-2]) )
+		elif isinstance(month_number, int) and (int(month_number) > 0) and (int(month_number) < 13):
+			return str( pCal.month_days(int(month_number)) - len(pCal.p_clndr[str(pCal.now.year)][int(month_number)]) )
+		else:
+			return False
+
+	def working_days_passed(day='current'):
+		total_holidays = 0
+
+		if day == 'current':
+			to_day = int(pCal.now.day)
+		elif int(day) in range(1,31):
+			to_day = int(day)
+		else:
+			return False
+
+		# Считать сегодня или нет
+		# if(pCal.now.hour < 14):
+		# 	to_day = to_day - 1
+
+		for d in pCal.p_clndr[str(pCal.now.year)][pCal.now.month-1]:
+			if int(d) < to_day:
+				total_holidays = total_holidays + 1
+			else:
+				break
+		return to_day - total_holidays
+
