@@ -22,7 +22,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
 		dregion = sublime.Region(0, self.view.size())		
-		self.view.replace(edit, dregion, '') # clear screen
 		if sublime.platform() == 'windows':
 			socket.setdefaulttimeout(10)
 		else:
