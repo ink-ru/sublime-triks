@@ -20,6 +20,11 @@ class kpiCommand(sublime_plugin.TextCommand):
 		html = resorce.read().decode("utf-8").strip()
 		return html
 
+	def lines_highlight(self,vspace):
+		regions = vspace.find_all("(баллы\s+чистые|план\s+на\s+сегодня)")
+		vspace.add_regions('important', regions, "mark")
+		return True
+
 	def run(self, edit):
 		dregion = sublime.Region(0, self.view.size())		
 		if sublime.platform() == 'windows':
@@ -114,12 +119,15 @@ class kpiCommand(sublime_plugin.TextCommand):
 					self.view.replace(edit, dregion, str(table))
 					self.view.run_command('fold_all')
 					self.view.sel().clear()
+					self.lines_highlight(self.view)
 				else:
 					target_view = self.view.window().new_file()
 					target_view.set_name('Demis KPI')
 					target_view.insert(edit, 0, table)
 					target_view.run_command('fold_all')
 					target_view.sel().clear()
+					self.lines_highlight(target_view)
+
 				sublime.status_message("Раскройте нужный вам блок")
 
 		except Exception as e: # urllib.error.URLError: <urlopen error timed out>
