@@ -39,8 +39,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 		self.settings = sublime.load_settings(self.this_settings)
 		authstring = self.settings.get("authstring")
 		my_id = self.settings.get("my_id")
-		vacation = self.settings.get("vacation")
-		vacation = vacation if (vacation is not None and vacation > 0) else 0
 
 		if authstring is not None:
 			authstring = authstring.split(':')
@@ -67,10 +65,40 @@ class kpiCommand(sublime_plugin.TextCommand):
 				udict = json.loads(rjson)
 
 				for record in cdict:
-					table += "{0:40}{1}".format( str(udict[record]['name']), "("+str(udict[record]['grade_name'])+")" ) + "\n"
-					# table += str(udict[record]['name'])+" ("+str(udict[record]['grade_name'])+")\n"
 
-					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=True))
+					table += "{0:40}{1}".format( str(udict[record]['name']), "("+str(udict[record]['grade_name'])+")" ) + "\n"
+
+					isues_amount = int(cdict[record]['issues_cnt'])
+					vip_isues_amount = int(cdict[record]['labor_vip'])
+					if vip_isues_amount > 0:
+						isues_amount = isues_amount + vip_isues_amount
+
+					avg_issue_index = float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1)
+
+					try:
+						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
+					except KeyError as e:
+						plan_rate = 0
+
+					if float(plan_rate) > 0:
+						plan_per_day = float(plan_rate)/20
+						real_plan = plan_per_day*int(pCal.working_days())
+					else:
+						plan_per_day = real_plan = 0
+
+					daily_index = float(cdict[record]['labor'])/pCal.working_days_passed()
+					
+					cdict[record]['средний балл за задачу'] = avg_issue_index
+					cdict[record]['план'] = float(real_plan)
+					cdict[record]['порог амнистии'] = float( plan_per_day*int(pCal.working_days())*1.3 )
+					cdict[record]['план на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()) )
+					cdict[record]['баллов в день'] = float(daily_index)
+					cdict[record]['прогноз'] = float(daily_index*float(pCal.working_days()))
+
+					if (cdict[record]['labor'] == cdict[record]['result']) and (cdict[record]['idle_penalty'] > 0) and (float(cdict[record]['result']) < cdict[record]['порог амнистии']):
+						cdict[record]['labor'] = float(cdict[record]['labor']) - cdict[record]['idle_penalty']
+
+					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=False))
 					for r_feild in od:
 						if not ( (cdict[record]['dept_issues_cnt'] == 0 and str(r_feild).find('dept_') >= 0) or (str(r_feild).find('_vip') >= 0 and int(cdict[record][r_feild]) == 0) ):
 							try:
@@ -81,37 +109,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 							param_name += ':'
 							table += "\t{0:40}{1:.2f}".format(param_name, float(cdict[record][r_feild]))+"\n"
-
-					isues_amount = int(cdict[record]['issues_cnt'])
-					vip_isues_amount = int(cdict[record]['labor_vip'])
-					if vip_isues_amount > 0:
-						isues_amount = isues_amount + vip_isues_amount
-
-					avg_issue_index = float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1)
-					cdict[record]['avg_issue_index'] = avg_issue_index
-					table += "\t{0:40}{1:.2f}".format('средний балл:', float(avg_issue_index) ) + "\n"
-
-					try:
-						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
-					except KeyError as e:
-						plan_rate = 0
-
-					if float(plan_rate) > 0:
-						plan_per_day = float(plan_rate)/20
-						real_plan = plan_per_day*int(pCal.working_days())
-						daily_index = float(cdict[record]['labor'])/pCal.working_days_passed()
-						if daily_index > 3:
-							daily_index = int(daily_index)-1
-						
-						table += "\t{0:40}{1:.2f}".format('план:', float(real_plan) ) + "\n"
-						table += "\t{0:40}{1:.2f}".format('порог амнистии:', float( plan_per_day*int(pCal.working_days())*1.3 ) ) + "\n"
-						table += "\t{0:40}{1:.2f}".format('план на сегодня:', float( plan_per_day*int(pCal.working_days_passed()) ) ) + "\n"
-						table += "\t{0:40}{1:.2f}".format('баллов в день:', float(daily_index) ) + "\n"
-						table += "\t{0:40}{1:.2f}".format('прогноз:', float(daily_index*float(pCal.working_days())) ) + "\n"
-
-
-					if vacation > 0:
-						table += "\t{0:40}{1}".format('Отсутствовал',  vacation) + "\n"
 
 				if self.view.name() == 'Demis KPI' and (not self.view.is_read_only()):
 					self.view.replace(edit, dregion, str(table))
