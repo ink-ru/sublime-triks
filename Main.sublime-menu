@@ -40,6 +40,15 @@
                     {
                         "command": "kpi",
                         "caption": "KPI"
+                    },
+                    {
+                        "caption": "Настройки",
+                        "id": "stools_settings",
+                        "children":
+                        [
+                            { "caption": "Учетные данные сервера otp.demis.ru", "command": "kpisettings", "args": {"param": "authstring"} },
+                            { "caption": "Подсветка изменений", "command": "kpisettings", "args": {"param": "mark_changes"} }
+                        ]
                     }
                 ]
             }
