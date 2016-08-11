@@ -47,7 +47,7 @@
                         "children":
                         [
                             { "caption": "Учетные данные сервера otp.demis.ru", "command": "kpisettings", "args": {"param": "authstring"} },
-                            { "caption": "Подсветка изменений", "command": "kpisettings", "args": {"param": "mark_changes"} }
+                            { "caption": "Подсветка изменений (необходим перезапуск)", "command": "kpisettings", "args": {"param": "mark_changes"} }
                         ]
                     }
                 ]
