@@ -26,8 +26,9 @@ class kpisettingsCommand(sublime_plugin.ApplicationCommand):
 
 
 		args_dict = {
-				'authstring': {'name':'authstring', 'hint':'login:password'},
-				'vacation' : {'name':'my_id', 'hint':'количество пропущенных дней'}
+				'authstring': {'name':'authstring', 'hint':'Учетные данные сервера otp.demis.ru (login:password)'},
+				'vacation' : {'name':'vacation', 'hint':'количество пропущенных дней'},
+				'mark_changes' : {'name':'mark_changes', 'hint':'Подсветка строк с изменениями (1 - вкл. / 0 - выкл.):'}
 		}
 
 		try:
@@ -39,6 +40,8 @@ class kpisettingsCommand(sublime_plugin.ApplicationCommand):
 			sublime.message_dialog(mess)
 			raise ValueError(mess)
 
+		sublime.status_message("Введите параметры настройки в строке ввода")
+		sublime.message_dialog("Введите параметры настройки в строке ввода")
 
 		parametr = self.settings.get(self.param_name)
 		parametr = parametr if (parametr is not None) and (len(parametr) > 0) else ""
