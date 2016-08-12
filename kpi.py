@@ -1,5 +1,5 @@
 import sublime, sublime_plugin
-import re, urllib, random, json, collections
+import re, urllib, random, json, collections, operator
 
 if sublime.platform() == 'windows':
 	import socket
@@ -68,11 +68,16 @@ class kpiCommand(sublime_plugin.TextCommand):
 				rjson = self.get_auth_url(full_url, username, password)
 				udict = json.loads(rjson)
 
-				sorted_result = collections.OrderedDict(sorted(cdict.items(), reverse=False))
+				users_ungrouped = {k : udict[k]['department_sys_name'] for k in cdict}
+				users_grouped = collections.OrderedDict(sorted(users_ungrouped.items(), key=operator.itemgetter(1)))
 
-				for record in sorted_result:
+				# sorted_result = collections.OrderedDict(sorted(cdict.items(), reverse=False))
 
-					table += "{0:34}{1:30}{2}".format( str(udict[record]['name']), str(udict[record]['grade_name']), str(udict[record]['department_sys_name']) ) + "\n"
+				for record in users_grouped:
+					grade = str(udict[record]['grade_name'])
+					if(grade.find('уководитель') > 0):
+						table += ("{0}"*80).format( "━" ) + "\n"
+					table += "{0:34}{1:30}{2}".format( str(udict[record]['name']), grade, str(udict[record]['department_sys_name']) ) + "\n"
 
 					isues_amount = int(cdict[record]['issues_cnt'])
 					vip_isues_amount = int(cdict[record]['labor_vip'])
