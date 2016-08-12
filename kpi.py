@@ -83,8 +83,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 					# === RECORD department_sys_name ===
 					table += "{0:34}{1:30}{2}".format( str(udict[record]['name']), grade, str(udict[record]['department_sys_name']) ) + "\n"
 
-					print('trace1')
-
 					# keys modification
 					cdict[record]['1_labor'] = cdict[record].pop("labor")
 					lbr = cdict[record]['1_labor']
@@ -102,7 +100,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
 					except KeyError as e:
 						plan_rate = 0
-						print ("Error: %s.\n" % str(e))
+						# print ("Error: %s.\n" % str(e))
 
 					if float(plan_rate) > 0:
 						plan_per_day = float(plan_rate)/20
@@ -122,8 +120,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['порог амнистии']):
 						cdict[record]['1_labor'] = float(lbr) - cdict[record]['idle_penalty']
 
-					print('trace3')
-
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=False))
 					for r_feild in od:
 						if not ( (cdict[record]['dept_issues_cnt'] == 0 and str(r_feild).find('dept_') >= 0) or (str(r_feild).find('_vip') >= 0 and int(cdict[record][r_feild]) == 0) ):
@@ -131,7 +127,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 								param_name = str(result_rus_dict[r_feild])
 							except KeyError as e:
 								param_name = str(r_feild)
-								print ("Error: %s.\n" % str(e))
+								# print ("Error: %s.\n" % str(e))
 								# raise ValueError('Undefined unit: {}'.format(e.args[0]))
 
 							param_name += ':'
