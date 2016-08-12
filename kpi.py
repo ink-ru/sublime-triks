@@ -1,5 +1,5 @@
 import sublime, sublime_plugin
-import re, urllib, random, json, collections, operator
+import re, urllib, random, json, collections, operator, math
 
 if sublime.platform() == 'windows':
 	import socket
@@ -21,8 +21,10 @@ class kpiCommand(sublime_plugin.TextCommand):
 		return html
 
 	def lines_highlight(self,vspace):
-		regions = vspace.find_all("(баллы\s+чистые|план\s+на\s+сегодня)")
+		regions = vspace.find_all("(баллы\s+чистые|план\s+на\s+сегодня)[^:]*:")
 		vspace.add_regions('important', regions, "mark")
+		regions = vspace.find_all("премия[^:]+:")
+		vspace.add_regions('inform', regions, "comment")
 		return True
 
 	def run(self, edit):
@@ -85,7 +87,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 					# keys modification
 					cdict[record]['1_labor'] = cdict[record].pop("labor")
-					lbr = cdict[record]['1_labor']
+					lbr = float(cdict[record]['1_labor'])
 
 					rslt = cdict[record]['2_result'] = cdict[record].pop("result")
 						
@@ -109,16 +111,27 @@ class kpiCommand(sublime_plugin.TextCommand):
 						plan_per_day = real_plan = 0
 
 					daily_index = float(lbr)/pCal.working_days_passed()
+
+					if lbr<150:
+						fot = math.floor(lbr/25)*400
+					elif lbr<350:
+						fot = math.floor((lbr-150)/50)*2300+2100
+					elif lbr>450:
+						fot = 12000+(lbr-350)*25
+					else:
+						fot = 12000+math.sin((lbr-350)*0.0157)*2500
 					
 					cdict[record]['средний балл за задачу'] = avg_issue_index
 					cdict[record]['план'] = float(real_plan)
 					cdict[record]['порог амнистии'] = float( plan_per_day*int(pCal.working_days())*1.3 )
 					cdict[record]['план на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()) )
+					cdict[record]['план амнистии на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()*1.3) )
 					cdict[record]['баллов в день'] = float(daily_index)
 					cdict[record]['прогноз'] = float(daily_index*float(pCal.working_days()))
+					cdict[record]['премия программиста (руб.)'] = round(fot)
 
 					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['порог амнистии']):
-						cdict[record]['1_labor'] = float(lbr) - cdict[record]['idle_penalty']
+						cdict[record]['1_labor'] = lbr - cdict[record]['idle_penalty']
 
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=False))
 					for r_feild in od:
