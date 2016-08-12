@@ -68,28 +68,41 @@ class kpiCommand(sublime_plugin.TextCommand):
 				rjson = self.get_auth_url(full_url, username, password)
 				udict = json.loads(rjson)
 
+				# sorting by groups
 				users_ungrouped = {k : udict[k]['department_sys_name'] for k in cdict}
 				users_grouped = collections.OrderedDict(sorted(users_ungrouped.items(), key=operator.itemgetter(1)))
 
-				# sorted_result = collections.OrderedDict(sorted(cdict.items(), reverse=False))
-
 				for record in users_grouped:
+					# === RECORD grade_name ===
 					grade = str(udict[record]['grade_name'])
+					
+					# разделитель строк
 					if(grade.find('уководитель') > 0):
 						table += ("{0}"*80).format( "━" ) + "\n"
+
+					# === RECORD department_sys_name ===
 					table += "{0:34}{1:30}{2}".format( str(udict[record]['name']), grade, str(udict[record]['department_sys_name']) ) + "\n"
 
+					print('trace1')
+
+					# keys modification
+					cdict[record]['1_labor'] = cdict[record].pop("labor")
+					lbr = cdict[record]['1_labor']
+
+					rslt = cdict[record]['2_result'] = cdict[record].pop("result")
+						
 					isues_amount = int(cdict[record]['issues_cnt'])
 					vip_isues_amount = int(cdict[record]['labor_vip'])
 					if vip_isues_amount > 0:
 						isues_amount = isues_amount + vip_isues_amount
 
-					avg_issue_index = float(cdict[record]['result'])/(isues_amount if isues_amount > 0 else 1)
+					avg_issue_index = float(rslt)/(isues_amount if isues_amount > 0 else 1)
 
 					try:
 						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
 					except KeyError as e:
 						plan_rate = 0
+						print ("Error: %s.\n" % str(e))
 
 					if float(plan_rate) > 0:
 						plan_per_day = float(plan_rate)/20
@@ -97,7 +110,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 					else:
 						plan_per_day = real_plan = 0
 
-					daily_index = float(cdict[record]['labor'])/pCal.working_days_passed()
+					daily_index = float(lbr)/pCal.working_days_passed()
 					
 					cdict[record]['средний балл за задачу'] = avg_issue_index
 					cdict[record]['план'] = float(real_plan)
@@ -106,8 +119,10 @@ class kpiCommand(sublime_plugin.TextCommand):
 					cdict[record]['баллов в день'] = float(daily_index)
 					cdict[record]['прогноз'] = float(daily_index*float(pCal.working_days()))
 
-					if (cdict[record]['labor'] == cdict[record]['result']) and (cdict[record]['idle_penalty'] > 0) and (float(cdict[record]['result']) < cdict[record]['порог амнистии']):
-						cdict[record]['labor'] = float(cdict[record]['labor']) - cdict[record]['idle_penalty']
+					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['порог амнистии']):
+						cdict[record]['1_labor'] = float(lbr) - cdict[record]['idle_penalty']
+
+					print('trace3')
 
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=False))
 					for r_feild in od:
@@ -116,6 +131,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 								param_name = str(result_rus_dict[r_feild])
 							except KeyError as e:
 								param_name = str(r_feild)
+								print ("Error: %s.\n" % str(e))
 								# raise ValueError('Undefined unit: {}'.format(e.args[0]))
 
 							param_name += ':'
@@ -140,6 +156,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 		except Exception as e: # urllib.error.URLError: <urlopen error timed out>
 			sublime.status_message("Сервер не отвечает! Попробуйте позже."+str(e))
 			sublime.message_dialog("Ошибка: "+str(e))
+			print ("Error: %s.\n" % str(e))
 		finally:
 			# Reset MAX execution time
 			if sublime.platform() == 'linux':
