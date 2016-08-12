@@ -26,7 +26,6 @@ class kpiCommand(sublime_plugin.TextCommand):
 		return True
 
 	def run(self, edit):
-		dregion = sublime.Region(0, self.view.size())		
 		if sublime.platform() == 'windows':
 			socket.setdefaulttimeout(10)
 		else:
@@ -69,9 +68,11 @@ class kpiCommand(sublime_plugin.TextCommand):
 				rjson = self.get_auth_url(full_url, username, password)
 				udict = json.loads(rjson)
 
-				for record in cdict:
+				sorted_result = collections.OrderedDict(sorted(cdict.items(), reverse=False))
 
-					table += "{0:40}{1}".format( str(udict[record]['name']), "("+str(udict[record]['grade_name'])+")" ) + "\n"
+				for record in sorted_result:
+
+					table += "{0:34}{1:30}{2}".format( str(udict[record]['name']), str(udict[record]['grade_name']), str(udict[record]['department_sys_name']) ) + "\n"
 
 					isues_amount = int(cdict[record]['issues_cnt'])
 					vip_isues_amount = int(cdict[record]['labor_vip'])
@@ -116,7 +117,8 @@ class kpiCommand(sublime_plugin.TextCommand):
 							table += "\t{0:40}{1:.2f}".format(param_name, float(cdict[record][r_feild]))+"\n"
 
 				if self.view.name() == 'Demis KPI' and (not self.view.is_read_only()):
-					self.view.replace(edit, dregion, str(table))
+					self.view.erase(edit, sublime.Region(0, self.view.size()))
+					self.view.replace(edit, sublime.Region(0, self.view.size()), str(table))
 					self.view.run_command('fold_all')
 					self.view.sel().clear()
 					self.lines_highlight(self.view)
