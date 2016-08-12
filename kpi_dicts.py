@@ -23,6 +23,9 @@ result_rus_dict = {
 'dept_overdue_cnt':'подразделение - просроченно задач',
 'dept_intime_perc':'подразделение - процент в срок',
 'labor_vip':'VIP',
+# generatd keys
+'1_labor':'баллы чистые',
+'2_result':'баллы грязные',
 # '':'',
 }
 
