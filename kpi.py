@@ -1,5 +1,8 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import sublime, sublime_plugin
-import re, urllib, random, json, collections, operator, math
+import re, urllib, random, json, collections, operator, math, os, sys
 
 if sublime.platform() == 'windows':
 	import socket
@@ -7,8 +10,13 @@ if sublime.platform() == 'windows':
 else:
 	import signal
 
+sys.path.append(os.path.join(sublime.packages_path(), "SeoTools"))
+
 from .pcal import *
 from .kpi_dicts import *
+
+# import csv
+# libreoffice --headless --convert-to csv  filename.ods
 
 class kpiCommand(sublime_plugin.TextCommand):
 
