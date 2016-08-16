@@ -40,7 +40,7 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 		for region in url_regions:
 			cl = vspace.substr(region)
 			code = self.get_response(cl)
-			vspace.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png")
+			vspace.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png", flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
 			print("Packages/SeoTools/icons/"+str(code)+".png\n")
 			i = i+1
 		return i
@@ -58,13 +58,13 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 			if len(view.sel()[0]) > 0:
 				if view.sel().contains(region):
 					code = self.get_response(cl)
-					view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png")
+					view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png", flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
 					print("Selection Packages/SeoTools/icons/"+str(code)+".png\n")
 					i = i + 1
 			else:
 				code = self.get_response(cl)
 				# Region is either in the selection or there is no selection
-				view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png")
+				view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png", flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
 				print("Packages/SeoTools/icons/"+str(code)+".png\n")
 				i = i + 1
 		return i
