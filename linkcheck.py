@@ -33,18 +33,6 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 		string = 'abcdefghijklmnopqrstuvwxyz'
 		return ''.join(random.choice(string) for i in range(length))
 
-	def chk_links(self,vspace):
-		url_regions = vspace.find_all("https?://[^\"'\s]+")
-
-		i=0
-		for region in url_regions:
-			cl = vspace.substr(region)
-			code = self.get_response(cl)
-			vspace.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png", flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
-			print("Packages/SeoTools/icons/"+str(code)+".png\n")
-			i = i+1
-		return i
-
 	# Check all links in view
 	def check_links(self, view):
 		# Find all URL's in the view
@@ -62,6 +50,9 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 					print("Selection Packages/SeoTools/icons/"+str(code)+".png\n")
 					i = i + 1
 			else:
+				if len(url_regions) > 200:
+					return False
+
 				code = self.get_response(cl)
 				# Region is either in the selection or there is no selection
 				view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png", flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
@@ -78,6 +69,8 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 
 			if total > 0:
 				logMsg += "Done!"
+			elif total == False:
+				logMsg = 'Слишком много ссылок. Выделите нужный фрагмент.'
 			else:
 				logMsg += "Nothing found."
 		else:
