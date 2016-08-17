@@ -47,7 +47,6 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 				if view.sel().contains(region):
 					code = self.get_response(cl)
 					view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png", flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
-					print("Selection Packages/SeoTools/icons/"+str(code)+".png\n")
 					i = i + 1
 			else:
 				if len(url_regions) > 200:
@@ -56,7 +55,6 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 				code = self.get_response(cl)
 				# Region is either in the selection or there is no selection
 				view.add_regions('url'+str(i), [region], "mark", "Packages/SeoTools/icons/"+str(code)+".png", flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
-				print("Packages/SeoTools/icons/"+str(code)+".png\n")
 				i = i + 1
 		return i
 
@@ -74,7 +72,7 @@ class linkcheckCommand(sublime_plugin.TextCommand):
 			else:
 				logMsg += "Nothing found."
 		else:
-			logMsg += "Empty document or readonly document!"
+			logMsg += "Empty or readonly document!"
 
 		sublime.status_message(logMsg)
 		sublime.message_dialog(logMsg)
