@@ -136,21 +136,25 @@ class kpiCommand(sublime_plugin.TextCommand):
 					daily_index = float(lbr)/pCal.working_days_passed()
 					
 					cdict[record]['средний балл за задачу'] = avg_issue_index
-					cdict[record]['план'] = float(real_plan)
-					cdict[record]['порог амнистии'] = float( plan_per_day*int(pCal.working_days())*1.3 )
+					# cdict[record]['план'] = float(real_plan)
+					# cdict[record]['порог амнистии'] = float( plan_per_day*int(pCal.working_days())*1.3 )
 					cdict[record]['план на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()) )
 					cdict[record]['порог амнистии на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()*1.3) )
 					cdict[record]['баллов в день'] = float(daily_index)
 					cdict[record]['прогноз'] = float(daily_index*float(pCal.working_days()))
-					cdict[record]['премия программиста (руб.)'] = self.eval_fot(lbr)
+					# cdict[record]['премия программиста (руб.)'] = self.eval_fot(lbr)
 					cdict[record]['премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())))
 
-					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['порог амнистии']):
+					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['plan_amnesty']):
 						cdict[record]['1_labor'] = lbr - cdict[record]['idle_penalty']
 
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=False))
 					for r_feild in od:
-						if not ( (cdict[record]['dept_issues_cnt'] == 0 and str(r_feild).find('dept_') >= 0) or (str(r_feild).find('_vip') >= 0 and int(cdict[record][r_feild]) == 0) ):
+						if not ( (cdict[record]['dept_issues_cnt'] == 0 and str(r_feild).find('dept_') >= 0)
+							or (str(r_feild).find('_vip') >= 0 and int(cdict[record][r_feild]) == 0)
+							or (str(r_feild).find('vacation') >= 0 and int(cdict[record][r_feild]) == 0)
+							or (str(r_feild).find('absence') >= 0 and int(cdict[record][r_feild]) == 0)
+							):
 							try:
 								param_name = str(result_rus_dict[r_feild])
 							except KeyError as e:
