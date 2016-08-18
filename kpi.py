@@ -135,15 +135,15 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 					daily_index = float(lbr)/pCal.working_days_passed()
 					
-					cdict[record]['средний балл за задачу'] = avg_issue_index
+					cdict[record]['Средний балл за задачу'] = avg_issue_index
 					# cdict[record]['план'] = float(real_plan)
 					# cdict[record]['порог амнистии'] = float( plan_per_day*int(pCal.working_days())*1.3 )
-					cdict[record]['план на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()) )
-					cdict[record]['порог амнистии на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()*1.3) )
-					cdict[record]['баллов в день'] = float(daily_index)
-					cdict[record]['прогноз'] = float(daily_index*float(pCal.working_days()))
+					cdict[record]['План на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()) )
+					cdict[record]['Порог амнистии на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()*1.3) )
+					cdict[record]['Баллов в день'] = float(daily_index)
+					cdict[record]['Прогноз'] = float(daily_index*float(pCal.working_days()))
 					# cdict[record]['премия программиста (руб.)'] = self.eval_fot(lbr)
-					cdict[record]['премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())))
+					cdict[record]['Премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())))
 
 					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['plan_amnesty']):
 						cdict[record]['1_labor'] = lbr - cdict[record]['idle_penalty']
