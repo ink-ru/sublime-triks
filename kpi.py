@@ -29,9 +29,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 		return html
 
 	def lines_highlight(self,vspace):
-		regions = vspace.find_all("(баллы\s+чистые|план\s+на\s+сегодня)[^:]*:")
+		regions = vspace.find_all("(Баллы\s+чистые|План\s+на\s+сегодня)[^:]*:")
 		vspace.add_regions('important', regions, "markup")
-		regions = vspace.find_all("премия[^:]+:")
+		regions = vspace.find_all("Премия[^:]+:")
 		vspace.add_regions('inform', regions, "comment")
 
 		# storage, keyword, invalid - red
