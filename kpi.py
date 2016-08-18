@@ -122,14 +122,14 @@ class kpiCommand(sublime_plugin.TextCommand):
 					avg_issue_index = float(rslt)/(isues_amount if isues_amount > 0 else 1)
 
 					try:
-						plan_rate = str(plan_rate_dict[udict[record]['grade_name']])
+						plan_rate = plan_rate_dict[udict[record]['grade_name']]
 					except KeyError as e:
 						plan_rate = 0
 						# print ("Error: %s.\n" % str(e))
 
 					if float(plan_rate) > 0:
-						plan_per_day = float(plan_rate)/20
-						real_plan = plan_per_day*int(pCal.working_days())
+						plan_per_day = float(plan_rate)/(20)
+						real_plan = plan_per_day * (int(pCal.working_days()) - int(cdict[record]['absence']))
 					else:
 						plan_per_day = real_plan = 0
 
@@ -143,7 +143,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 					cdict[record]['Баллов в день'] = float(daily_index)
 					cdict[record]['Прогноз'] = float(daily_index*float(pCal.working_days()))
 					# cdict[record]['премия программиста (руб.)'] = self.eval_fot(lbr)
-					cdict[record]['Премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())))
+					cdict[record]['Премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())) + float(cdict[record]['vacation_labor']))
 
 					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['plan_amnesty']):
 						cdict[record]['1_labor'] = lbr - cdict[record]['idle_penalty']
