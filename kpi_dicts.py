@@ -19,8 +19,8 @@ result_rus_dict = {
 'plan_amnesty':			'Порог амнистии',
 'absence':				'Отсутствия',
 'plan_perc':			'Процент плана',
-'money':				'Премия',
-'money_result':			'money_result',
+'money':				'Премия (общая)',
+'money_result':			'Премия программиста',
 'vacation_labor':		'Компенсация отпуска',
 'dept_labor':			'Подразделение: Объем набранных баллов',
 'dept_labor_vip':		'Подразделение: Объем баллов за проверки VIP',
@@ -35,8 +35,8 @@ result_rus_dict = {
 'dept_money_labor':		'Подразделение: Премия',
 'dept_money_intime':	'Подразделение: Премия за сроки',
 # generatd keys
-'1_labor':'баллы чистые',
-'2_result':'баллы грязные',
+'1_labor':'Баллы чистые',
+'2_result':'Баллы грязные',
 # '':'',
 }
 
