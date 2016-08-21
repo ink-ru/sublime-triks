@@ -61,6 +61,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 		authstring = ''
 		username = ''
 		password = ''
+		person = ''
 		table = 'Demis KPI\n'
 
 		# Reading settings
@@ -150,6 +151,8 @@ class kpiCommand(sublime_plugin.TextCommand):
 
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=False))
 					for r_feild in od:
+						if person == '' and username == udict[record]['mail']:
+							person = udict[record]['name']
 						if not ( (cdict[record]['dept_issues_cnt'] == 0 and str(r_feild).find('dept_') >= 0)
 							or (str(r_feild).find('_vip') >= 0 and int(cdict[record][r_feild]) == 0)
 							or (str(r_feild).find('vacation') >= 0 and int(cdict[record][r_feild]) == 0)
@@ -166,19 +169,17 @@ class kpiCommand(sublime_plugin.TextCommand):
 							table += "\t{0:40}{1:.2f}".format(param_name, float(cdict[record][r_feild]))+"\n"
 
 				if self.view.name() == 'Demis KPI' and (not self.view.is_read_only()):
-					self.view.erase(edit, sublime.Region(0, self.view.size()))
-					self.view.replace(edit, sublime.Region(0, self.view.size()), str(table))
-					self.view.run_command('fold_all')
-					self.view.sel().clear()
-					self.lines_highlight(self.view)
+					view = self.view
+					view.erase(edit, sublime.Region(0, self.view.size()))
 				else:
-					target_view = self.view.window().new_file()
-					target_view.set_name('Demis KPI')
-					target_view.insert(edit, 0, table)
-					target_view.run_command('fold_all')
-					target_view.sel().clear()
-					self.lines_highlight(target_view)
-
+					view = self.view.window().new_file()
+					view.set_name('Demis KPI')
+				view.insert(edit, 0, table)
+				view.run_command('fold_all')
+				view.sel().clear()
+				self.lines_highlight(view)
+				view.set_viewport_position( (view.rowcol(view.find(person, 0).begin())[0], 0) , True )
+				view.unfold(view.find(person+".+\n(?s)(\t[^\n]+)(.*?)^[^\t]", 0))
 				sublime.status_message("Раскройте нужный вам блок")
 
 		except Exception as e: # urllib.error.URLError: <urlopen error timed out>
