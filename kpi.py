@@ -142,9 +142,9 @@ class kpiCommand(sublime_plugin.TextCommand):
 					cdict[record]['План на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()) )
 					cdict[record]['Порог амнистии на сегодня'] = float( plan_per_day*int(pCal.working_days_passed()*1.3) )
 					cdict[record]['Баллов в день'] = float(daily_index)
-					cdict[record]['Прогноз'] = float(daily_index*float(pCal.working_days()))
+					# cdict[record]['Прогноз'] = float(daily_index*float(pCal.working_days()))
 					# cdict[record]['премия программиста (руб.)'] = self.eval_fot(lbr)
-					cdict[record]['Премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())) + float(cdict[record]['vacation_labor']))
+					# cdict[record]['Премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())) + float(cdict[record]['vacation_labor']))
 
 					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['plan_amnesty']):
 						cdict[record]['1_labor'] = lbr - cdict[record]['idle_penalty']
