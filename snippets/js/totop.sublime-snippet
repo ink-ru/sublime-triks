@@ -1,0 +1,26 @@
+<snippet>
+	<content><![CDATA[
+		// ==== Top button ====
+		\$('body').append('<a class="back-to-top">⇧</a>');
+
+		var amountScrolled = 100;
+
+		\$(window).scroll(function() {
+			if ( \$(window).scrollTop() > amountScrolled ) {
+				\$('a.back-to-top').fadeIn('slow');
+			} else {
+				\$('a.back-to-top').fadeOut('slow');
+			}
+		});
+
+		\$('a.back-to-top').on('click', function(){
+			\$('body').animate({ scrollTop: 0 }, ${1:400});
+		});
+		${0}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>totop</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.js</scope>
+	<description>Scroll to top button</description>
+</snippet>
