@@ -146,8 +146,7 @@ class kpiCommand(sublime_plugin.TextCommand):
 					# cdict[record]['премия программиста (руб.)'] = self.eval_fot(lbr)
 					# cdict[record]['Премия программиста прогноз (руб.)'] = self.eval_fot(float(daily_index*float(pCal.working_days())) + float(cdict[record]['vacation_labor']))
 
-					if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['plan_amnesty']):
-						cdict[record]['1_labor'] = lbr - cdict[record]['idle_penalty']
+					# if (lbr == rslt) and (cdict[record]['idle_penalty'] > 0) and (float(rslt) < cdict[record]['plan_amnesty']):cdict[record]['1_labor'] = lbr - cdict[record]['idle_penalty']
 
 					od = collections.OrderedDict(sorted(cdict[record].items(), reverse=False))
 					for r_feild in od:
