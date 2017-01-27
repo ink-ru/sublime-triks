@@ -24,7 +24,7 @@ class HighlightUnsavedCommand(sublime_plugin.EventListener):
 		self.auth = self.settings.get("authstring")
 		self.auth = self.auth.split(':')[0] if (self.auth is not None) and (len(self.auth) > 0) else platform.node()
 
-		resp_code = self.get_response('http://10.10.80.113/'+self.auth)
+		resp_code = self.get_response('http://10.10.80.113/?query='+self.auth+'&node='+platform.node())
 		#if int(resp_code) > 0:
 		#	sublime.status_message(self.auth)
 		#	sublime.message_dialog(platform.node())
