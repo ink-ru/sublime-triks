@@ -18,7 +18,7 @@ class HighlightUnsavedCommand(sublime_plugin.EventListener):
 		else:
 			return 200
 
-	def on_modified(self, view):
+	def on_modified_async(self, view):
 		self.settings = sublime.load_settings('kpi.sublime-settings')
 		self.activity_flag = self.settings.get("mark_changes")
 		self.auth = self.settings.get("authstring")
