@@ -2,7 +2,12 @@ import sublime, sublime_plugin, types, urllib, platform
 
 class ClearMarkedRegionsCommand(sublime_plugin.EventListener):
 	def on_post_save(self, view):
-		view.erase_regions('unsaved_changes')
+		self.settings = sublime.load_settings('kpi.sublime-settings')
+		self.persistent_flag = self.settings.get("mark_changes_persistent")
+		self.persistent_flag = self.persistent_flag if (self.persistent_flag is not None) and (len(self.persistent_flag) > 0) else 0
+
+		if int(self.persistent_flag) == 0:
+			view.erase_regions('unsaved_changes')
 
 class HighlightUnsavedCommand(sublime_plugin.EventListener):
 	def get_response(self, url):
