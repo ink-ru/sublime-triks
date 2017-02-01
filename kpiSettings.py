@@ -28,7 +28,8 @@ class kpisettingsCommand(sublime_plugin.ApplicationCommand):
 		args_dict = {
 				'authstring': {'name':'authstring', 'hint':'Учетные данные сервера otp.demis.ru (login:password)'},
 				'vacation' : {'name':'vacation', 'hint':'количество пропущенных дней'},
-				'mark_changes' : {'name':'mark_changes', 'hint':'Подсветка строк с изменениями (1 - вкл. / 0 - выкл.):'}
+				'mark_changes' : {'name':'mark_changes', 'hint':'Подсветка строк с изменениями (1 - вкл. / 0 - выкл.):'},
+				'mark_changes_persistent' : {'name':'mark_changes_persistent', 'hint':'Сохранять подсветку строк с изменениями даже после сохранения файла (1 - вкл. / 0 - выкл.):'}
 		}
 
 		try:
@@ -53,6 +54,7 @@ class kpisettingsCommand(sublime_plugin.ApplicationCommand):
 			# sublime.message_dialog(logMsg)
 
 	def save_sett(self, prmtr_val):
+		prmtr_val = prmtr_val.strip()
 		if len(prmtr_val) > 0:
 			self.settings.set(self.param_name, prmtr_val)
 			sublime.save_settings(self.this_settings)
