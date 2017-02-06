@@ -92,9 +92,9 @@ class creportrCommand(sublime_plugin.TextCommand):
 				r.insert(edit, 0, rcontent)
 				found+=1
 
-			ro = self.view.window().new_file()
-			ro.set_name('robots.txt')
-			ro.insert(edit, 0, robots_rules+rfile.group(1))
+			#ro = self.view.window().new_file()
+			#ro.set_name('robots.txt')
+			#ro.insert(edit, 0, robots_rules+rfile.group(1))
 
 			# content = re.sub(r"(?s)(.*?)\n\n", "", content)
 			# content = re.sub(r"Table (of) contents", r"+\1+", content)
