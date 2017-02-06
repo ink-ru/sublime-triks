@@ -12,8 +12,18 @@
                 "children":
                 [
                     {
-                        "command": "creport",
-                        "caption": "Xenu report"
+                        "caption": "Xenu report",
+                        "children":
+                        [
+                            {
+                                "command": "creport",
+                                "caption": "Преобразование очета Xenu"
+                            },
+                            {
+                                "command": "creportr",
+                                "caption": "Преобразование с учетом robots.txt"
+                            }
+                        ]
                     },
                     {
                         "caption": "Преобразования в массив",
