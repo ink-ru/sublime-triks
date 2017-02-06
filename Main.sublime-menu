@@ -17,11 +17,13 @@
                         [
                             {
                                 "command": "creport",
-                                "caption": "Преобразование очета Xenu"
+                                "caption": "Преобразование очета Xenu",
+                                "args": {"param": "strict"}
                             },
                             {
-                                "command": "creportr",
-                                "caption": "Преобразование с учетом robots.txt"
+                                "command": "creport",
+                                "caption": "Преобразование с учетом robots.txt",
+                                "args": {"param": "robots"}
                             }
                         ]
                     },
