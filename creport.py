@@ -36,7 +36,9 @@ class creportCommand(sublime_plugin.TextCommand):
 			if broken is not None:
 				bcontent = broken.group(3)
 				
-				bcontent = re.sub(r"(\n){1,}\d+ broken link\(s\) reported\s*", "", bcontent)
+				bcontent = re.sub(r"(\n){1,}\d+ broken link\(s\) reported\s*", "", bcontent)+"\n\n"
+				# bcontent = re.sub(r"^https?:\S+\n.+\w: +((?!(400|401|403|404|410|429))|\d{4,})+(?s)(.*?)\n\n", "", bcontent, flags=re.MULTILINE)
+				bcontent = re.sub(r"^https?:\S+\n(\w| )+code: +((?!(400|401|403|404|410|429))|\d{4,}).*:\n(\t\S+\n){1,}", "", bcontent, flags=re.MULTILINE)
 				bcontent = bcontent.replace("error code", "код ошибки").replace("linked from page(s)", "найдено на страницах")
 				if(param == 'robots' and len(robots_rules) > 26):
 					bcontent = re.sub(robots_rules, "", bcontent, flags=re.MULTILINE)
@@ -48,7 +50,9 @@ class creportCommand(sublime_plugin.TextCommand):
 			redirects = re.search('(?s)'+REDIR+'(\n){2,}(.*?)'+TOP, content)
 			#redirects = re.search('(?s)List of redirected URLs(\n){2,}(.*?)Return to Top', content)
 			if redirects is not None:
-				rcontent = redirects.group(2)
+				rcontent = redirects.group(2)+"\n\n"
+				#rcontent = re.sub(r"^https?:\S+\nredirected.+\n.+code: +((?!(301|302|307|303))|\d{4,})+(?s)(.*?)\n\n", "", rcontent, flags=re.MULTILINE)
+				rcontent = re.sub(r"^https?:\S+\nredirected.+\n.+code: +((?!(301|302|307|303))|\d{4,}).*\nlinked.*:\n(\t\S+\n){1,}\n*", "", rcontent, flags=re.MULTILINE)
 				rcontent = rcontent.replace("redirected to", "перенаправляет на").replace("status code", "код ответа").replace("linked from page(s)", "найдено на страницах")
 				if(param == 'robots' and len(robots_rules) > 26):
 					rcontent = re.sub(robots_rules, "", rcontent, flags=re.MULTILINE)
