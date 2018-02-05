@@ -32,7 +32,7 @@ class creportCommand(sublime_plugin.TextCommand):
 			content = re.sub(r":\s+((\thttp\S+\n){10})(\thttp\S+\n){1,}", r":\n\g<1>\tИ другие...\n", content)
 			# content = re.sub(r":((\thttp\S+\n){1,10})\t(?s)(.*?)\n\n", r":\g<1>\tи др.\n\n", content)
 
-			broken = re.search('(?s)('+BROKEN+'|'+BROKEN1+')(\n){2,}(.*?)'+TOP, content)
+			broken = re.search('(?s)('+BROKEN+'|'+BROKEN1+')(\n){1,}(.*?)'+TOP, content)
 			if broken is not None:
 				bcontent = broken.group(3)
 				
@@ -47,7 +47,7 @@ class creportCommand(sublime_plugin.TextCommand):
 				b.insert(edit, 0, bcontent)
 				found+=1
 
-			redirects = re.search('(?s)'+REDIR+'(\n){2,}(.*?)'+TOP, content)
+			redirects = re.search('(?s)'+REDIR+'(\n){1,}(.*?)'+TOP, content)
 			#redirects = re.search('(?s)List of redirected URLs(\n){2,}(.*?)Return to Top', content)
 			if redirects is not None:
 				rcontent = redirects.group(2)+"\n\n"
